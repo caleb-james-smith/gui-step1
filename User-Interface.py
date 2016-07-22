@@ -659,10 +659,14 @@ class makeGui:
 
         # Make a option menu for GPIO selection
         self.gpioSelect_box = OptionMenu(self.experi_subTop2_7_frame, self.gpioChoiceVar,
-                          "J2 and J21","J3 and J20","J4 and J19","J5 and J18",
-                          "J7 and J26","J8 and J25","J9 and J24","J10 and J23")
+                          "J2 and J18","J3 and J19","J4 and J20","J5 and J21",
+                          "J7 and J23","J8 and J24","J9 and J25","J10 and J26")
+        # self.gpioSelect_box = OptionMenu(self.experi_subTop2_7_frame, self.gpioChoiceVar,
+        #                   "J2 and J21","J3 and J20","J4 and J19","J5 and J18",
+        #                   "J7 and J26","J8 and J25","J9 and J24","J10 and J23")
         self.gpioSelect_box.pack(side=LEFT)
-        self.gpioChoiceVar.set("J2 and J21")
+        self.gpioChoiceVar.set("J2 and J18") # Default Value
+        # self.gpioChoiceVar.set("J2 and J21")
 
         # Make a button to submit GPIO option
         self.gpioSelect_bttn = Button(self.experi_subTop2_8_frame, command=self.gpioBttnPress,
@@ -974,10 +978,15 @@ class makeGui:
 
     # Opens the proper GPIO slot. Used for programming cards.
     def gpioBttnPress(self):
-        jSlotDict = {"J2 and J18" : 0x29, "J3 and J19" : 0x89, "J4 and J20" : 0xA9,
+        jSlotDict = {
+                    "J2 and J18" : 0x29, "J3 and J19" : 0x89, "J4 and J20" : 0xA9,
                     "J5 and J21" : 0x49, "J7 and J23" : 0x2A, "J8 and J24" : 0x8A,
                     "J9 and J25" : 0xAA, "J10 and J26" : 0x4A}
 
+        dictStringToInts = {
+                    "J2 and J18" : [2, 18], "J3 and J19" : [3, 19], "J4 and J20" : [4, 20],
+                    "J5 and J21" : [5, 21], "J7 and J23" : [7, 23], "J8 and J24" : [8, 24],
+                    "J9 and J25" : [9, 25], "J10 and J26" : [10, 26]}
 
         # Full Backplane Functionality
         newJSlotDict = {"J2 and J21" : [0x29,0x49], "J3 and J20" : [0x89,0xA9],
@@ -985,49 +994,55 @@ class makeGui:
                         "J7 and J26" : [0x2A,0x4A], "J8 and J25" : [0x8A,0xAA],
                         "J9 and J24" : [0xAA,0x8A], "J10 and J23" : [0x4A,0x2A]}
 
-        newDictStringToInts = {"J2 and J21" : [2, 21], "J3 and J20" : [3, 20],
+        newDictStringToInts = {
+                        "J2 and J21" : [2, 21], "J3 and J20" : [3, 20],
                         "J4 and J19" : [4, 19], "J5 and J18" : [5, 18],
                         "J7 and J26" : [7, 26], "J8 and J25" : [8, 25],
                         "J9 and J24" : [9, 24], "J10 and J23" : [10, 23]}
 
-        gpioVals = newJSlotDict[self.gpioChoiceVar.get()]
-        self.jslots = newDictStringToInts[self.gpioChoiceVar.get()]
-        print '\nGPIO '+self.gpioChoiceVar.get()+' values = '+str(gpioVals)
+        gpioVal = jSlotDict[self.gpioChoiceVar.get()]
+        self.jslots = dictStringToInts[self.gpioChoiceVar.get()]
+        print '\nGPIO '+self.gpioChoiceVar.get()+' value = '+str(gpioVal)
 
-	for gpioValsIndex in xrange(len(gpioVals)):
-	    gpioVal = gpioVals[gpioValsIndex]
-            if gpioValsIndex == 0:
-                self.myBus.write(0x72, [0x02])
-            else:
-                self.myBus.write(0x72, [0x01])
-            batch = self.myBus.sendBatch()
-            self.myBus.write(0x74, [0x08]) # PCA9538 is bit 3 on ngccm mux
-            # myBus.write(0x70,[0x01,0x00]) # GPIO PwrEn is register 3
-            #power on and reset
-                #register 3 is control reg for i/o modes
-            self.myBus.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
-            self.myBus.write(0x70,[0x01,0x08])
-            self.myBus.write(0x70,[0x01,0x18]) # GPIO reset is 10
-            self.myBus.write(0x70,[0x01,0x08])
+        # gpioVals = newJSlotDict[self.gpioChoiceVar.get()]
+        # self.jslots = newDictStringToInts[self.gpioChoiceVar.get()]
+        # print '\nGPIO '+self.gpioChoiceVar.get()+' values = '+str(gpioVals)
 
-            #jtag selectors finnagling for slot 26
-            self.myBus.write(0x70,[0x01,gpioVal])
+	for gpioValsIndex in xrange(2):
+	    # gpioVal = gpioVals[gpioValsIndex]
+        if gpioValsIndex == 0:
+            self.myBus.write(0x72, [0x02])
+        else:
+            self.myBus.write(0x72, [0x01])
+        batch = self.myBus.sendBatch()
+        print 'Fanout Batch = '+str(batch)
+        self.myBus.write(0x74, [0x08]) # PCA9538 is bit 3 on ngccm mux
+        # myBus.write(0x70,[0x01,0x00]) # GPIO PwrEn is register 3
+        #power on and reset
+            #register 3 is control reg for i/o modes
+        self.myBus.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
+        self.myBus.write(0x70,[0x01,0x08])
+        self.myBus.write(0x70,[0x01,0x18]) # GPIO reset is 10
+        self.myBus.write(0x70,[0x01,0x08])
 
-            # myBus.write(0x70,[0x03,0x08])
-            self.myBus.read(0x70,1)
-            batch = self.myBus.sendBatch()
-            print 'GPIO Batch = '+str(batch)
+        #jtag selectors finnagling for slot 26
+        self.myBus.write(0x70,[0x01,gpioVal])
 
-            if (batch[-1] == "1 0"):
-                print "I2C communication error with GPIO!"
-                self.gpioSelect_bttn.configure(bg="#ff3333")
-            elif (batch[-1] == "0 "+str(gpioVal)):
-                print "GPIO " + str(newJSlotDict[self.gpioChoiceVar.get()]) + " Opened!"
-                self.gpioSelect_bttn.configure(bg="#33ff33")
+        # myBus.write(0x70,[0x03,0x08])
+        self.myBus.read(0x70,1)
+        batch = self.myBus.sendBatch()
+        print 'GPIO Batch = '+str(batch)
 
-            else:
-                print 'message = '+str(batch[-1])
-                print 'GPIO Choice Error... state of confusion!'
+        if (batch[-1] == "1 0"):
+            print "I2C communication error with GPIO!"
+            self.gpioSelect_bttn.configure(bg="#ff3333")
+        elif (batch[-1] == "0 "+str(gpioVal)):
+            print "GPIO " + str(newJSlotDict[self.gpioChoiceVar.get()]) + " Opened!"
+            self.gpioSelect_bttn.configure(bg="#33ff33")
+
+        else:
+            print 'message = '+str(batch[-1])
+            print 'GPIO Choice Error... state of confusion!'
         # print 'initial = '+str(batch)
 
 ##################################################################################
@@ -1171,7 +1186,7 @@ class makeGui:
         else:
             print 'Toggle Igloo Power Fail!'
             print '\nPlease confirm that the power source is on.'
-            print 'Please confirm that the card is in the selected slot (J18 or J23).'
+            print 'Please confirm that the card is in the selected slot (e.g. J2 or J18).'
         return retval
 
     def toggleIgloo(self):
