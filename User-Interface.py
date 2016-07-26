@@ -33,9 +33,6 @@ class makeGui:
         # Create an instance of cardInformation
         self.cardInfo = cardInformation()
 
-	# Read info from left side?
-	self.readFromList = True
-
         # Make an empty list that will eventually contain all of
         # the active card slots
         self.outSlotNumbers = []
@@ -488,9 +485,9 @@ class makeGui:
         self.testPassState = ("Pass","Fail")
 
         #################################
-        ###               ###
+        ###                           ###
         ###       Info for Card       ###
-        ###               ###
+        ###                           ###
         #################################
 
         # Make a label for the uniqueID entry
@@ -1008,8 +1005,10 @@ class makeGui:
         # self.jslots = newDictStringToInts[self.gpioChoiceVar.get()]
         # print '\nGPIO '+self.gpioChoiceVar.get()+' values = '+str(gpioVals)
 
-	for gpioValsIndex in xrange(2):
-	    # gpioVal = gpioVals[gpioValsIndex]
+    for gpioValsIndex in xrange(2):
+        print 'gpioValsIndex = '+str(gpioValsIndex)
+        print str(self.myBus)
+        # gpioVal = gpioVals[gpioValsIndex]
         if gpioValsIndex == 0:
             self.myBus.write(0x72, [0x02])
         else:
@@ -1048,8 +1047,8 @@ class makeGui:
 ##################################################################################
 
     def getUniqueIDPress_left(self):
-	self.readFromLeft = True
-	self.getUniqueIDPress()
+        self.readFromLeft = True
+        self.getUniqueIDPress()
 
 ##################################################################################
 
