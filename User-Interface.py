@@ -23,6 +23,7 @@ class makeGui:
     def __init__(self, parent):
         # Create a webBus instance
         self.myBus = client.webBus("pi7",0)
+        print 'dis is mybus = '+str(self.myBus)
 
         # Create a permanent address of QCard
         self.address = 0x19
