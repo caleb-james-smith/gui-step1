@@ -658,11 +658,15 @@ class makeGui:
         self.gpioSelect_label.pack(side=LEFT)
 
         # Make a option menu for GPIO selection
+        # self.gpioSelect_box = OptionMenu(self.experi_subTop2_7_frame, self.gpioChoiceVar,
+        #                   "J2 and J21","J3 and J20","J4 and J19","J5 and J18",
+        #                   "J7 and J26","J8 and J25","J9 and J24","J10 and J23")
         self.gpioSelect_box = OptionMenu(self.experi_subTop2_7_frame, self.gpioChoiceVar,
-                          "J2 and J21","J3 and J20","J4 and J19","J5 and J18",
-                          "J7 and J26","J8 and J25","J9 and J24","J10 and J23")
+                          "J2 and J18","J3 and J19","J4 and J20","J5 and J21",
+                          "J7 and J23","J8 and J24","J9 and J25","J10 and J26")
         self.gpioSelect_box.pack(side=LEFT)
-        self.gpioChoiceVar.set("J2 and J21")
+        # self.gpioChoiceVar.set("J2 and J21")
+        self.gpioChoiceVar.set("J2 and J18")
 
         # Make a button to submit GPIO option
         self.gpioSelect_bttn = Button(self.experi_subTop2_8_frame, command=self.gpioBttnPress,
@@ -978,6 +982,10 @@ class makeGui:
                     "J5 and J21" : 0x49, "J7 and J23" : 0x2A, "J8 and J24" : 0x8A,
                     "J9 and J25" : 0xAA, "J10 and J26" : 0x4A}
 
+        dictStringToInts = {
+                    "J2 and J18" : [2, 18], "J3 and J19" : [3, 19], "J4 and J20" : [4, 20],
+                    "J5 and J21" : [5, 21], "J7 and J23" : [7, 23], "J8 and J24" : [8, 24],
+                    "J9 and J25" : [9, 25], "J10 and J26" : [10, 26]}
 
         # Full Backplane Functionality
         newJSlotDict = {"J2 and J21" : [0x29,0x49], "J3 and J20" : [0x89,0xA9],
@@ -990,12 +998,15 @@ class makeGui:
                         "J7 and J26" : [7, 26], "J8 and J25" : [8, 25],
                         "J9 and J24" : [9, 24], "J10 and J23" : [10, 23]}
 
-        gpioVals = newJSlotDict[self.gpioChoiceVar.get()]
-        self.jslots = newDictStringToInts[self.gpioChoiceVar.get()]
-        print '\nGPIO '+self.gpioChoiceVar.get()+' values = '+str(gpioVals)
+        gpioVal = jSlotDict[self.gpioChoiceVar.get()]
+        self.jslots = dictStringToInts[self.gpioChoiceVar.get()]
+        print '\nGPIO '+self.gpioChoiceVar.get()+' value = '+str(gpioVal)
 
-	for gpioValsIndex in xrange(len(gpioVals)):
-	    gpioVal = gpioVals[gpioValsIndex]
+        # gpioVals = newJSlotDict[self.gpioChoiceVar.get()]
+        # self.jslots = newDictStringToInts[self.gpioChoiceVar.get()]
+        # print '\nGPIO '+self.gpioChoiceVar.get()+' values = '+str(gpioVals)
+
+        for gpioValsIndex in xrange(2):
             if gpioValsIndex == 0:
                 self.myBus.write(0x72, [0x02])
             else:
@@ -1028,13 +1039,13 @@ class makeGui:
             else:
                 print 'message = '+str(batch[-1])
                 print 'GPIO Choice Error... state of confusion!'
-        # print 'initial = '+str(batch)
+            # print 'initial = '+str(batch)
 
 ##################################################################################
 
     def getUniqueIDPress_left(self):
-	self.readFromLeft = True
-	self.getUniqueIDPress()
+        self.readFromLeft = True
+        self.getUniqueIDPress()
 
 ##################################################################################
 
@@ -1171,7 +1182,7 @@ class makeGui:
         else:
             print 'Toggle Igloo Power Fail!'
             print '\nPlease confirm that the power source is on.'
-            print 'Please confirm that the card is in the selected slot (J18 or J23).'
+            print 'Please confirm that the card is in the selected slot (e.g. J2 or J18).'
         return retval
 
     def toggleIgloo(self):
